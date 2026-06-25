@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Horario semanal</title>
+    <link rel="stylesheet" href="assets/tabler-icons.min.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div style="max-width: 800px; margin: 0 auto">
+      <h2 class="sr-only">
+        Horario semanal con desayuno a las 7am en días de semana y fin de semana
+        más flexible, con bloques para búsqueda de empleo, ejercicio, casa y
+        ocio
+      </h2>
+
+      <div
+        style="display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap"
+      >
+        <button
+          id="btn-week"
+          style="
+            border: 2px solid var(--color-border-info);
+            background: var(--color-background-info);
+            color: var(--color-text-info);
+          "
+        >
+          Semana completa
+        </button>
+        <button data-day="0">Lun</button>
+        <button data-day="1">Mar</button>
+        <button data-day="2">Mié</button>
+        <button data-day="3">Jue</button>
+        <button data-day="4">Vie</button>
+        <button data-day="5">Sáb</button>
+        <button data-day="6">Dom</button>
+      </div>
+
+      <div
+        id="legend"
+        style="
+          display: flex;
+          gap: 16px;
+          flex-wrap: wrap;
+          margin-bottom: 1.5rem;
+          font-size: 13px;
+          color: var(--color-text-secondary);
+        "
+      >
+        <span
+          ><i
+            class="ti ti-briefcase"
+            style="color: var(--color-text-info); margin-right: 4px"
+            aria-hidden="true"
+          ></i
+          >Búsqueda de empleo</span
+        >
+        <span
+          ><i
+            class="ti ti-run"
+            style="color: #0f6e56; margin-right: 4px"
+            aria-hidden="true"
+          ></i
+          >Ejercicio</span
+        >
+        <span
+          ><i
+            class="ti ti-tools-kitchen-2"
+            style="color: #993c1d; margin-right: 4px"
+            aria-hidden="true"
+          ></i
+          >Cocina / aseo</span
+        >
+        <span
+          ><i
+            class="ti ti-coffee"
+            style="color: #854f0b; margin-right: 4px"
+            aria-hidden="true"
+          ></i
+          >Ocio</span
+        >
+        <span
+          ><i
+            class="ti ti-moon-stars"
+            style="color: #534ab7; margin-right: 4px"
+            aria-hidden="true"
+          ></i
+          >Foco nocturno</span
+        >
+      </div>
+
+      <div id="board"></div>
+    </div>
+
+    <script>
+      const days = [
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+        "Domingo",
+      ];
+
+      const types = {
+        empleo: {
+          icon: "ti-briefcase",
+          bg: "var(--color-background-info)",
+          text: "var(--color-text-info)",
+        },
+        ejercicioCasa: { icon: "ti-run", bg: "#E1F5EE", text: "#085041" },
+        ejercicioFuera: { icon: "ti-walk", bg: "#E1F5EE", text: "#085041" },
+        casa: { icon: "ti-tools-kitchen-2", bg: "#FAECE7", text: "#712B13" },
+        ocio: { icon: "ti-coffee", bg: "#FAEEDA", text: "#633806" },
+        foco: { icon: "ti-moon-stars", bg: "#EEEDFE", text: "#3C3489" },
+      };
+
+      function block(start, end, type, title, note) {
+        return { start, end, type, title, note };
+      }
+
+      const schedule = [
+        [
+          // Lunes
+          block(
+            "6:15",
+            "6:45",
+            "casa",
+            "Levantarse y arreglar cuarto",
+            "Cama hecha = primer bloque completado",
+          ),
+          block(
+            "6:45",
+            "7:00",
+            "casa",
+            "Preparar desayuno",
+            "Listo antes de las 7:00",
+          ),
+          block("7:00", "7:30", "casa", "Desayuno con tu pareja", null),
+          block("7:30", "8:00", "casa", "Aseo de cocina", null),
+          block("8:00", "9:00", "ejercicioFuera", "Caminata / trote", null),
+          block(
+            "9:00",
+            "10:00",
+            "casa",
+            "Aseo general (1 zona de la casa)",
+            "Solo una zona, no toda la casa",
+          ),
+          block("10:30", "12:00", "ocio", "Tiempo libre / descanso", null),
+          block("12:30", "13:30", "casa", "Almuerzo + cocinar", null),
+          block(
+            "14:00",
+            "15:30",
+            "empleo",
+            "Tareas mecánicas: actualizar CV, buscar ofertas",
+            "Trabajo de bajo foco, no requiere energía nocturna",
+          ),
+          block("16:00", "17:30", "ocio", "Tiempo libre", null),
+          block(
+            "18:00",
+            "20:00",
+            "foco",
+            "Aplicar a 3 ofertas + preparar mensajes",
+            "Bloque de mayor concentración del día",
+          ),
+          block("20:00", "20:30", "casa", "Cena ligera", null),
+        ],
+        [
+          // Martes
+          block("6:15", "6:45", "casa", "Levantarse y arreglar cuarto", null),
+          block("6:45", "7:00", "casa", "Preparar desayuno", null),
+          block("7:00", "7:30", "casa", "Desayuno con tu pareja", null),
+          block("7:30", "8:00", "casa", "Aseo de cocina", null),
+          block(
+            "8:00",
+            "9:00",
+            "ejercicioCasa",
+            "Rutina en casa (fuerza/estiramiento)",
+            null,
+          ),
+          block("9:30", "11:00", "ocio", "Tiempo libre", null),
+          block("12:00", "13:00", "casa", "Almuerzo + cocinar", null),
+          block(
+            "14:00",
+            "15:00",
+            "empleo",
+            "Practicar 1 pregunta de entrevista en voz alta",
+            null,
+          ),
+          block("15:30", "17:00", "ocio", "Tiempo libre", null),
+          block(
+            "18:00",
+            "20:00",
+            "foco",
+            "Curso / habilidad técnica (estudio enfocado)",
+            "Bloque de mayor concentración del día",
+          ),
+          block("20:00", "20:30", "casa", "Cena ligera", null),
+        ],
+        [
+          // Miércoles
+          block("6:15", "6:45", "casa", "Levantarse y arreglar cuarto", null),
+          block("6:45", "7:00", "casa", "Preparar desayuno", null),
+          block("7:00", "7:30", "casa", "Desayuno con tu pareja", null),
+          block("7:30", "8:00", "casa", "Aseo de cocina", null),
+          block("8:00", "9:00", "ejercicioFuera", "Caminata / trote", null),
+          block("9:00", "10:00", "casa", "Aseo general (otra zona)", null),
+          block("10:30", "12:00", "ocio", "Tiempo libre", null),
+          block("12:30", "13:30", "casa", "Almuerzo + cocinar", null),
+          block(
+            "14:00",
+            "15:30",
+            "empleo",
+            "Tareas mecánicas: seguimiento a aplicaciones enviadas",
+            null,
+          ),
+          block("16:00", "17:30", "ocio", "Tiempo libre", null),
+          block(
+            "18:00",
+            "20:00",
+            "foco",
+            "Aplicar a 3 ofertas nuevas",
+            "Bloque de mayor concentración del día",
+          ),
+          block("20:00", "20:30", "casa", "Cena ligera", null),
+        ],
+        [
+          // Jueves
+          block("6:15", "6:45", "casa", "Levantarse y arreglar cuarto", null),
+          block("6:45", "7:00", "casa", "Preparar desayuno", null),
+          block("7:00", "7:30", "casa", "Desayuno con tu pareja", null),
+          block("7:30", "8:00", "casa", "Aseo de cocina", null),
+          block("8:00", "9:00", "ejercicioCasa", "Rutina en casa", null),
+          block("9:30", "11:00", "ocio", "Tiempo libre", null),
+          block("12:00", "13:00", "casa", "Almuerzo + cocinar", null),
+          block(
+            "14:00",
+            "15:00",
+            "empleo",
+            "LinkedIn / red de contactos",
+            null,
+          ),
+          block("15:30", "17:00", "ocio", "Tiempo libre", null),
+          block(
+            "18:00",
+            "20:00",
+            "foco",
+            "Curso / habilidad técnica",
+            "Bloque de mayor concentración del día",
+          ),
+          block("20:00", "20:30", "casa", "Cena ligera", null),
+        ],
+        [
+          // Viernes
+          block("6:15", "6:45", "casa", "Levantarse y arreglar cuarto", null),
+          block("6:45", "7:00", "casa", "Preparar desayuno", null),
+          block("7:00", "7:30", "casa", "Desayuno con tu pareja", null),
+          block("7:30", "8:00", "casa", "Aseo de cocina", null),
+          block("8:00", "9:00", "ejercicioFuera", "Caminata / trote", null),
+          block(
+            "9:00",
+            "10:00",
+            "casa",
+            "Aseo general (última zona)",
+            "Cierra el ciclo semanal de aseo",
+          ),
+          block("10:30", "12:00", "ocio", "Tiempo libre", null),
+          block("12:30", "13:30", "casa", "Almuerzo + cocinar", null),
+          block(
+            "14:00",
+            "15:30",
+            "empleo",
+            "Revisar semana: qué funcionó, qué no",
+            "Mini-retro semanal, 5 min de notas",
+          ),
+          block("16:00", "18:00", "ocio", "Tarde libre / social", null),
+          block(
+            "18:30",
+            "20:00",
+            "foco",
+            "Cierre suave: lectura o tema personal",
+            "Noche más ligera para no quemar el fin de semana",
+          ),
+        ],
+        [
+          // Sábado
+          block(
+            "8:30",
+            "9:00",
+            "casa",
+            "Levantarse con calma",
+            "Sin hora fija exacta, solo orientativa",
+          ),
+          block(
+            "9:00",
+            "9:30",
+            "casa",
+            "Desayuno con tu pareja",
+            "Horario relajado, ambos descansan",
+          ),
+          block(
+            "10:00",
+            "11:30",
+            "ejercicioFuera",
+            "Actividad física más larga (caminata, parque, deporte)",
+            null,
+          ),
+          block(
+            "12:00",
+            "14:00",
+            "casa",
+            "Cocinar algo más elaborado para la semana",
+            "Meal prep si rinde",
+          ),
+          block(
+            "14:00",
+            "19:00",
+            "ocio",
+            "Día libre",
+            "Sin culpa, es parte del sistema",
+          ),
+          block("19:00", "21:00", "ocio", "Noche libre", null),
+        ],
+        [
+          // Domingo
+          block("8:30", "9:00", "casa", "Levantarse con calma", null),
+          block(
+            "9:00",
+            "9:30",
+            "casa",
+            "Desayuno con tu pareja",
+            "Horario relajado",
+          ),
+          block(
+            "10:00",
+            "11:00",
+            "ejercicioCasa",
+            "Movimiento suave (estiramiento, yoga)",
+            null,
+          ),
+          block(
+            "11:30",
+            "13:00",
+            "casa",
+            "Aseo profundo de la semana + lavandería",
+            null,
+          ),
+          block("13:30", "14:30", "casa", "Almuerzo", null),
+          block(
+            "15:00",
+            "16:00",
+            "empleo",
+            "Preparar la semana: revisar agenda, dejar todo listo",
+            "Reduce la fricción del lunes en la mañana",
+          ),
+          block("16:30", "19:30", "ocio", "Tarde libre", null),
+          block(
+            "20:00",
+            "21:00",
+            "foco",
+            "Planear 3 ofertas objetivo para el lunes",
+            "Bloque corto, solo para arrancar liviano",
+          ),
+        ],
+      ];
+
+      const board = document.getElementById("board");
+
+      function renderDay(dayIdx) {
+        const blocks = schedule[dayIdx];
+        let html =
+          '<div style="border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; background: var(--color-background-primary);">';
+        html +=
+          '<p style="font-weight: 500; font-size: 15px; margin: 0 0 12px;">' +
+          days[dayIdx] +
+          "</p>";
+        blocks.forEach((b) => {
+          const t = types[b.type];
+          html +=
+            '<div style="display: flex; gap: 12px; align-items: flex-start; padding: 8px 0; border-top: 0.5px solid var(--color-border-tertiary);">';
+          html +=
+            '<div style="min-width: 88px; font-size: 12px; color: var(--color-text-secondary); padding-top: 2px;">' +
+            b.start +
+            " – " +
+            b.end +
+            "</div>";
+          html +=
+            '<div style="width: 28px; height: 28px; border-radius: 50%; background:' +
+            t.bg +
+            "; color:" +
+            t.text +
+            '; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><i class="ti ' +
+            t.icon +
+            '" style="font-size:15px;" aria-hidden="true"></i></div>';
+          html += '<div style="flex:1;">';
+          html +=
+            '<p style="margin:0; font-size:14px; font-weight:500;">' +
+            b.title +
+            "</p>";
+          if (b.note)
+            html +=
+              '<p style="margin:2px 0 0; font-size:12px; color: var(--color-text-secondary);">' +
+              b.note +
+              "</p>";
+          html += "</div></div>";
+        });
+        html += "</div>";
+        board.innerHTML = html;
+      }
+
+      function renderWeek() {
+        let html =
+          '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px;">';
+        schedule.forEach((blocks, i) => {
+          html +=
+            '<div style="border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 0.75rem; background: var(--color-background-primary);">';
+          html +=
+            '<p style="font-weight: 500; font-size: 13px; margin: 0 0 8px;">' +
+            days[i] +
+            "</p>";
+          blocks.forEach((b) => {
+            const t = types[b.type];
+            html +=
+              '<div style="display:flex; align-items:center; gap:6px; padding:3px 0;">';
+            html +=
+              '<i class="ti ' +
+              t.icon +
+              '" style="font-size:13px; color:' +
+              t.text +
+              '; flex-shrink:0;" aria-hidden="true"></i>';
+            html +=
+              '<span style="font-size:11px; color: var(--color-text-secondary); min-width:38px;">' +
+              b.start +
+              "</span>";
+            html += '<span style="font-size:12px;">' + b.title + "</span>";
+            html += "</div>";
+          });
+          html += "</div>";
+        });
+        html += "</div>";
+        board.innerHTML = html;
+      }
+
+      function setActive(btn) {
+        document.querySelectorAll("#btn-week, [data-day]").forEach((b) => {
+          b.style.border = "0.5px solid var(--color-border-secondary)";
+          b.style.background = "transparent";
+          b.style.color = "var(--color-text-primary)";
+        });
+        btn.style.border = "2px solid var(--color-border-info)";
+        btn.style.background = "var(--color-background-info)";
+        btn.style.color = "var(--color-text-info)";
+      }
+
+      document.getElementById("btn-week").addEventListener("click", (e) => {
+        setActive(e.target);
+        renderWeek();
+      });
+
+      document.querySelectorAll("[data-day]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          setActive(e.target);
+          renderDay(Number(e.target.dataset.day));
+        });
+      });
+
+      renderWeek();
+    </script>
+  </body>
+</html>
