@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Horario semanal</title>
+    <link rel="stylesheet" href="assets/tabler-icons.min.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div style="max-width: 800px; margin: 0 auto">
+      <h2 class="sr-only">
+        Horario semanal de estudio de lunes a viernes con ejercicio a las 6:30,
+        clases y estudio en la universidad, alemán, comidas y natación
+      </h2>
+
+      <div
+        style="display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap"
+      >
+        <button
+          id="btn-week"
+          style="
+            border: 2px solid var(--color-border-info);
+            background: var(--color-background-info);
+            color: var(--color-text-info);
+          "
+        >
+          Semana completa
+        </button>
+        <button data-day="0">Lun</button>
+        <button data-day="1">Mar</button>
+        <button data-day="2">Mié</button>
+        <button data-day="3">Jue</button>
+        <button data-day="4">Vie</button>
+      </div>
+
+      <div
+        id="legend"
+        style="
+          display: flex;
+          gap: 16px;
+          flex-wrap: wrap;
+          margin-bottom: 1.5rem;
+          font-size: 13px;
+          color: var(--color-text-secondary);
+        "
+      >
+        <span
+          ><i
+            class="ti ti-school"
+            style="color: var(--color-text-info); margin-right: 4px"
+            aria-hidden="true"
+          ></i
+          >Clase</span
+        >
+        <span
+          ><i
+            class="ti ti-book"
+            style="color: #534ab7; margin-right: 4px"
+            aria-hidden="true"
+          ></i
+          >Estudio</span
+        >
+        <span
+          ><i
+            class="ti ti-run"
+            style="color: #0f6e56; margin-right: 4px"
+            aria-hidden="true"
+          ></i
+          >Ejercicio / natación</span
+        >
+        <span
+          ><i
+            class="ti ti-tools-kitchen-2"
+            style="color: #993c1d; margin-right: 4px"
+            aria-hidden="true"
+          ></i
+          >Comidas / casa</span
+        >
+        <span
+          ><i
+            class="ti ti-walk"
+            style="color: #5f5e5a; margin-right: 4px"
+            aria-hidden="true"
+          ></i
+          >Trayecto</span
+        >
+        <span
+          ><i
+            class="ti ti-coffee"
+            style="color: #854f0b; margin-right: 4px"
+            aria-hidden="true"
+          ></i
+          >Descanso</span
+        >
+      </div>
+
+      <div id="board"></div>
+    </div>
+
+    <script>
+      const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
+
+      const types = {
+        clase: {
+          icon: "ti-school",
+          bg: "var(--color-background-info)",
+          text: "var(--color-text-info)",
+        },
+        estudio: { icon: "ti-book", bg: "#EEEDFE", text: "#3C3489" },
+        ejercicio: { icon: "ti-run", bg: "#E1F5EE", text: "#085041" },
+        natacion: { icon: "ti-swimming", bg: "#E1F5EE", text: "#085041" },
+        casa: { icon: "ti-tools-kitchen-2", bg: "#FAECE7", text: "#712B13" },
+        trayecto: { icon: "ti-walk", bg: "#F1EFE8", text: "#444441" },
+        descanso: { icon: "ti-coffee", bg: "#FAEEDA", text: "#633806" },
+      };
+
+      function block(start, end, type, title, note) {
+        return { start, end, type, title, note };
+      }
+
+      const schedule = [
+        [
+          // Lunes
+          block("6:30", "7:00", "ejercicio", "Ejercicio", null),
+          block("7:00", "7:30", "casa", "Alistarte", null),
+          block("7:30", "8:00", "trayecto", "Trayecto a la uni", null),
+          block(
+            "8:00",
+            "10:00",
+            "estudio",
+            "Ejercicios del Suppl. SSP + apuntes de SSP",
+            null,
+          ),
+          block("10:00", "10:15", "descanso", "Descanso", null),
+          block(
+            "10:15",
+            "11:45",
+            "clase",
+            "Suppl. Statistical Signal Processing",
+            "H5",
+          ),
+          block("11:45", "12:45", "casa", "Almuerzo", null),
+          block(
+            "12:45",
+            "13:15",
+            "estudio",
+            "Estudio previo: tarea y vocabulario de alemán",
+            null,
+          ),
+          block(
+            "13:15",
+            "14:15",
+            "estudio",
+            "Estudio previo: tema de SSP",
+            null,
+          ),
+          block(
+            "14:15",
+            "15:45",
+            "clase",
+            "Statistical Signal Processing",
+            "H5",
+          ),
+          block(
+            "15:45",
+            "16:15",
+            "descanso",
+            "Descanso / caminar a alemán",
+            null,
+          ),
+          block(
+            "16:15",
+            "17:45",
+            "clase",
+            "German A1.1 – Center V",
+            "Sala II/11, Stintzingstraße 12",
+          ),
+          block("17:45", "18:15", "trayecto", "Trayecto a casa", null),
+          block("18:15", "19:00", "casa", "Cena", null),
+        ],
+        [
+          // Martes
+          block("6:30", "7:00", "ejercicio", "Ejercicio", null),
+          block("7:00", "7:30", "casa", "Alistarte", null),
+          block("7:30", "8:00", "trayecto", "Trayecto a la uni", null),
+          block("8:00", "9:30", "estudio", "Estudio previo: tema de DSP", null),
+          block(
+            "9:30",
+            "10:15",
+            "descanso",
+            "Descanso / caminar a H15",
+            "Margen: si prefieres salir más tarde, llega a las 8:45 y estudia DSP de 8:45 a 10:15",
+          ),
+          block("10:15", "11:45", "clase", "Digital Signal Processing", "H15"),
+          block(
+            "11:45",
+            "12:15",
+            "estudio",
+            "Estudio previo: Music Processing – Synthesis",
+            null,
+          ),
+          block(
+            "12:15",
+            "13:45",
+            "clase",
+            "Music Processing – Synthesis",
+            "Sala 05.025",
+          ),
+          block("13:45", "14:45", "casa", "Almuerzo", null),
+          block(
+            "14:45",
+            "15:15",
+            "estudio",
+            "Estudio previo: Statistical SP",
+            "Para la clase del miércoles a las 8:15",
+          ),
+          block(
+            "15:15",
+            "16:15",
+            "estudio",
+            "Estudio previo: tema de Digital Communications",
+            null,
+          ),
+          block("16:15", "17:45", "clase", "Digital Communications", "H16"),
+          block("17:45", "18:15", "trayecto", "Trayecto a casa", null),
+          block("18:15", "19:00", "casa", "Cena", null),
+        ],
+        [
+          // Miércoles
+          block("6:30", "7:00", "ejercicio", "Ejercicio", null),
+          block("7:00", "7:30", "casa", "Alistarte", null),
+          block("7:30", "8:00", "trayecto", "Trayecto a la uni", null),
+          block(
+            "8:00",
+            "8:15",
+            "estudio",
+            "Acomodarte y repasar rápido los apuntes de SSP",
+            null,
+          ),
+          block("8:15", "9:45", "clase", "Statistical Signal Processing", "H5"),
+          block("9:45", "10:45", "estudio", "Repaso: problemas de SSP", null),
+          block(
+            "10:45",
+            "11:45",
+            "estudio",
+            "Práctica: Music Processing – Synthesis",
+            null,
+          ),
+          block("11:45", "12:45", "casa", "Almuerzo", null),
+          block("12:45", "13:15", "estudio", "Estudio previo: alemán", null),
+          block(
+            "13:15",
+            "14:15",
+            "estudio",
+            "Estudio previo: Digital Communications",
+            null,
+          ),
+          block(
+            "14:15",
+            "15:45",
+            "clase",
+            "Digital Communications (+ tutorial)",
+            "H16. El tutorial alterna con la clase, confírmalo en StudOn",
+          ),
+          block(
+            "15:45",
+            "16:15",
+            "descanso",
+            "Descanso / caminar a alemán",
+            null,
+          ),
+          block(
+            "16:15",
+            "17:45",
+            "clase",
+            "German A1.1 – Center V",
+            "Sala II/11",
+          ),
+          block("17:45", "18:15", "trayecto", "Trayecto a casa", null),
+          block("18:15", "19:00", "casa", "Cena", null),
+        ],
+        [
+          // Jueves
+          block("6:30", "7:00", "ejercicio", "Ejercicio", null),
+          block("7:00", "7:30", "casa", "Alistarte", null),
+          block("7:30", "8:00", "trayecto", "Trayecto a la uni", null),
+          block(
+            "8:00",
+            "10:15",
+            "estudio",
+            "Práctica: ejercicios de Statistical SP",
+            null,
+          ),
+          block("10:15", "10:30", "descanso", "Descanso", null),
+          block(
+            "10:30",
+            "12:30",
+            "estudio",
+            "Práctica: problemas de Digital Communications",
+            null,
+          ),
+          block("12:30", "13:30", "casa", "Almuerzo", null),
+          block(
+            "13:30",
+            "14:45",
+            "estudio",
+            "Práctica: ejercicios de DSP",
+            null,
+          ),
+          block(
+            "14:45",
+            "15:45",
+            "estudio",
+            "Estudio previo: Information Theory & Coding",
+            null,
+          ),
+          block("15:45", "16:15", "descanso", "Descanso / caminar a H7", null),
+          block(
+            "16:15",
+            "17:45",
+            "clase",
+            "Information Theory and Coding",
+            "H7. Es el día más largo en la uni: solo tienes esta clase",
+          ),
+          block("17:45", "18:15", "trayecto", "Trayecto al supermercado", null),
+          block("18:15", "19:15", "casa", "Mercado", "Cierran a las 20:00"),
+          block("19:15", "19:45", "trayecto", "Trayecto a casa", null),
+          block("19:45", "20:30", "casa", "Cena", null),
+        ],
+        [
+          // Viernes
+          block("6:30", "7:00", "ejercicio", "Ejercicio", null),
+          block("7:00", "7:30", "casa", "Alistarte", null),
+          block("7:30", "8:00", "trayecto", "Trayecto a la uni", null),
+          block("8:00", "9:30", "estudio", "Estudio previo: tema de DSP", null),
+          block(
+            "9:30",
+            "10:15",
+            "descanso",
+            "Descanso / caminar a H15",
+            "Margen: si prefieres salir más tarde, llega a las 8:45 y estudia DSP de 8:45 a 10:15",
+          ),
+          block("10:15", "11:45", "clase", "Digital Signal Processing", "H15"),
+          block(
+            "11:45",
+            "12:15",
+            "estudio",
+            "Estudio previo: Information Theory & Coding",
+            null,
+          ),
+          block(
+            "12:15",
+            "13:45",
+            "clase",
+            "Information Theory and Coding (+ tutorial)",
+            "H7. El tutorial alterna con la clase, confírmalo en StudOn",
+          ),
+          block("13:45", "14:45", "casa", "Almuerzo", null),
+          block(
+            "14:45",
+            "15:45",
+            "estudio",
+            "Estudio previo: hoja de ejercicios del Suppl. DSP",
+            null,
+          ),
+          block(
+            "15:45",
+            "16:15",
+            "estudio",
+            "Repaso: Information Theory & Coding",
+            null,
+          ),
+          block(
+            "16:15",
+            "17:45",
+            "clase",
+            "Suppl. Digital Signal Processing",
+            "H15",
+          ),
+          block(
+            "17:45",
+            "18:00",
+            "trayecto",
+            "Trayecto a la piscina",
+            "Asumo 15 min",
+          ),
+          block("18:00", "19:00", "natacion", "Natación", null),
+          block(
+            "19:00",
+            "19:30",
+            "trayecto",
+            "Trayecto a casa",
+            "Asumo 30 min",
+          ),
+          block("19:30", "20:15", "casa", "Cena", null),
+        ],
+      ];
+
+      const board = document.getElementById("board");
+
+      function renderDay(dayIdx) {
+        const blocks = schedule[dayIdx];
+        let html =
+          '<div style="border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; background: var(--color-background-primary);">';
+        html +=
+          '<p style="font-weight: 500; font-size: 15px; margin: 0 0 12px;">' +
+          days[dayIdx] +
+          "</p>";
+        blocks.forEach((b) => {
+          const t = types[b.type];
+          html +=
+            '<div style="display: flex; gap: 12px; align-items: flex-start; padding: 8px 0; border-top: 0.5px solid var(--color-border-tertiary);">';
+          html +=
+            '<div style="min-width: 88px; font-size: 12px; color: var(--color-text-secondary); padding-top: 2px;">' +
+            b.start +
+            " – " +
+            b.end +
+            "</div>";
+          html +=
+            '<div style="width: 28px; height: 28px; border-radius: 50%; background:' +
+            t.bg +
+            "; color:" +
+            t.text +
+            '; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><i class="ti ' +
+            t.icon +
+            '" style="font-size:15px;" aria-hidden="true"></i></div>';
+          html += '<div style="flex:1;">';
+          html +=
+            '<p style="margin:0; font-size:14px; font-weight:500;">' +
+            b.title +
+            "</p>";
+          if (b.note)
+            html +=
+              '<p style="margin:2px 0 0; font-size:12px; color: var(--color-text-secondary);">' +
+              b.note +
+              "</p>";
+          html += "</div></div>";
+        });
+        html += "</div>";
+        board.innerHTML = html;
+      }
+
+      function renderWeek() {
+        let html =
+          '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px;">';
+        schedule.forEach((blocks, i) => {
+          html +=
+            '<div style="border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 0.75rem; background: var(--color-background-primary);">';
+          html +=
+            '<p style="font-weight: 500; font-size: 13px; margin: 0 0 8px;">' +
+            days[i] +
+            "</p>";
+          blocks.forEach((b) => {
+            const t = types[b.type];
+            html +=
+              '<div style="display:flex; align-items:center; gap:6px; padding:3px 0;">';
+            html +=
+              '<i class="ti ' +
+              t.icon +
+              '" style="font-size:13px; color:' +
+              t.text +
+              '; flex-shrink:0;" aria-hidden="true"></i>';
+            html +=
+              '<span style="font-size:11px; color: var(--color-text-secondary); min-width:38px;">' +
+              b.start +
+              "</span>";
+            html += '<span style="font-size:12px;">' + b.title + "</span>";
+            html += "</div>";
+          });
+          html += "</div>";
+        });
+        html += "</div>";
+        board.innerHTML = html;
+      }
+
+      function setActive(btn) {
+        document.querySelectorAll("#btn-week, [data-day]").forEach((b) => {
+          b.style.border = "0.5px solid var(--color-border-secondary)";
+          b.style.background = "transparent";
+          b.style.color = "var(--color-text-primary)";
+        });
+        btn.style.border = "2px solid var(--color-border-info)";
+        btn.style.background = "var(--color-background-info)";
+        btn.style.color = "var(--color-text-info)";
+      }
+
+      document.getElementById("btn-week").addEventListener("click", (e) => {
+        setActive(e.target);
+        renderWeek();
+      });
+
+      document.querySelectorAll("[data-day]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          setActive(e.target);
+          renderDay(Number(e.target.dataset.day));
+        });
+      });
+
+      renderWeek();
+    </script>
+  </body>
+</html>
